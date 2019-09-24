@@ -1,20 +1,42 @@
 const path = require('path');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+// function recursiveIssuer(m) {
+//   if (m.issuer) {
+//     return recursiveIssuer(m.issuer);
+//   } else if (m.name) {
+//     return m.name;
+//   } else {
+//     return false;
+//   }
+// }
+
 module.exports = { 
   entry: {
-    main: './src/index.js',
-    index: './src/mymy.js',
+    main: './src/main.js',
+    index: './src/index.js',
   },
   output: {
     path: path.join(__dirname, '/dist'),
-    filename: '[name].[chunkhash].js'
+    filename: '[name].[chunkhash].js',
+    publicPath: '/'
   },
   mode: 'development',
   resolve: {
     extensions: ['.js']
+  },
+  module: {
+    rules: [
+      {
+        test: /\.pug$/,
+        use: [
+          'html-loader',
+          'pug-html-loader'
+        ]
+      }
+    ]
   },
   optimization: {
     splitChunks: {
@@ -35,6 +57,9 @@ module.exports = {
           name: 'vendors',
         },
         abc: {
+          // test: (module, c, entry = 'main') => {
+          //   return m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry
+          // },
           minChunks: 2,
           priority: -20,
           reuseExistingChunk: true,
@@ -48,19 +73,26 @@ module.exports = {
   plugins: [
     new htmlWebpackPlugin({
       filename: 'main.html',
-      template: path.resolve(__dirname, './src/views/index.html'),
+      template: path.resolve(__dirname, './src/views/main.pug'),
       inject: true,
       chunks: ['main', 'abc'],
       hash: true
     }),
     new htmlWebpackPlugin({
-      filename: 'index.html',
-      template: path.resolve(__dirname, './src/views/index.html'),
+      filename: 'hello.html',
+      template: path.resolve(__dirname, './src/views/index.pug'),
       inject: true,
       chunks: ['index', 'abc'],
       hash: true
     }),
-    new BundleAnalyzerPlugin(),
+    new htmlWebpackPlugin({
+      filename: '404.html',
+      template: path.resolve(__dirname, './views/404.pug'),
+      inject: true,
+      // chunks: ['index', 'abc'],
+      hash: true
+    }),
+    // new BundleAnalyzerPlugin(),
     new CleanWebpackPlugin()
   ]
 }

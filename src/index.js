@@ -1,8 +1,6 @@
-import say from './a';
-import alert from './b';
 import aa from './c';
+import say from './d';
 
-say();
-aa();
-alert('xss');
-console.log('im index')
+aa()
+say()
+console.log('im index');
